@@ -1,0 +1,27 @@
+{
+    "Version": "2.0",
+    "Sections": [
+        {
+            "Name": "General",
+            "Description": "Main settings",
+            "IsAdvanced": false,
+            "Keys": [
+                {
+                    "Value": false,
+                    "Name": "QuestsShouldContainDurationToken",
+                    "Description": "If true - only search for time left in quests that contains duration token, false - try to search in all quests",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "DetailedQuestDuration",
+                    "Description": "Use hours and minutes in quest remaing time",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                }
+            ],
+            "$version": "v1"
+        }
+    ]
+}

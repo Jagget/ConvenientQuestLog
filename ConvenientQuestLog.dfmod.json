@@ -1,0 +1,15 @@
+{
+    "ModTitle": "ConvenientQuestLog",
+    "ModVersion": "2.0",
+    "ModAuthor": "Macadaynu (updated by Jagget)",
+    "ContactInfo": "DFU Forums",
+    "DFUnity_Version": "1.0.0",
+    "ModDescription": "Improves quest log usability",
+    "GUID": "eaec5e4c-fbfc-4665-8da8-d02ea831ada2",
+    "Files": [
+        "Assets/Game/Mods/ConvenientQuestLog/modsettings.json",
+        "Assets/Game/Mods/ConvenientQuestLog/RegisterConvenientQuestLogWindow.cs",
+        "Assets/Game/Mods/ConvenientQuestLog/ConvenientQuestLogWindow.cs",
+        "Assets/Game/Mods/ConvenientQuestLog/ConvenientQuestLog.dfmod.json"
+    ]
+}

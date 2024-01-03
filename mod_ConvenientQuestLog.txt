@@ -1,0 +1,13 @@
+schema: *key, $text
+
+- Mod details
+Mod.Description, "Повышает удобство журнала заданий"
+
+- Settings
+Settings.General.Name, "Основные"
+Settings.General.Description, "Основные настройки"
+Settings.General.QuestsShouldContainDurationToken.Name, "Искать маркер времени"
+Settings.General.QuestsShouldContainDurationToken.Description, "Если true - искать оставшееся время только в квестах, содержащих маркер времен, false - пытаться выполнить поиск во всех квестах"
+Settings.General.DetailedQuestDuration.Name, "Детализированная продолжительность"
+Settings.General.DetailedQuestDuration.Description, "Использовать часы и минуты для показа оставшегося времени выполнения задания"
+
