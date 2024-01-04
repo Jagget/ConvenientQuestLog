@@ -171,7 +171,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         private string GetTravelTime(Place place)
         {
-            DaggerfallUnity.Instance.ContentReader.GetLocation(place.SiteDetails.regionName, place.SiteDetails.locationName, out DFLocation dfLocation);
+            DFLocation dfLocation;
+            DaggerfallUnity.Instance.ContentReader.GetLocation(place.SiteDetails.regionName, place.SiteDetails.locationName, out dfLocation);
 
             if (dfLocation.LocationIndex == GameManager.Instance.PlayerGPS.CurrentLocation.LocationIndex)
                 return currentLocation;

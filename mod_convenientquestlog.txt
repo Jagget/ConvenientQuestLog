@@ -10,4 +10,3 @@ Settings.General.QuestsShouldContainDurationToken.Name, "Искать марке
 Settings.General.QuestsShouldContainDurationToken.Description, "Если true - искать оставшееся время только в квестах, содержащих маркер времен, false - пытаться выполнить поиск во всех квестах"
 Settings.General.DetailedQuestDuration.Name, "Детализированная продолжительность"
 Settings.General.DetailedQuestDuration.Description, "Использовать часы и минуты для показа оставшегося времени выполнения задания"
-
