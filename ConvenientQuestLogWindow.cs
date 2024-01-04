@@ -6,6 +6,7 @@ using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
+using Mono.CSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,19 +16,18 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
     public class ConvenientQuestLogWindow : DaggerfallQuestJournalWindow
     {
-        public static bool selectedQuestDisplayed = false;
-        public static bool travelOptionsModEnabled = false;
-        public static bool travelOptionsCautiousTravel = false;
-        public static bool travelOptionsStopAtInnsTravel = false;
-        public static readonly int defaultMessageCheckValue = -1;
+        static bool selectedQuestDisplayed = false;
+        TravelTimeCalculator travelTimeCalculator = new TravelTimeCalculator();
+        Message selectedQuestMessage;
+        static bool travelOptionsModEnabled = false;
+        static bool travelOptionsCautiousTravel = false;
+        static bool travelOptionsStopAtInnsTravel = false;
+        List<Message> groupedQuestMessages;
+        static int defaultMessageCheckValue = -1;
+        int currentMessageCheck = defaultMessageCheckValue;
 
-        private readonly TravelTimeCalculator travelTimeCalculator = new TravelTimeCalculator();
-        private Message selectedQuestMessage;
-        private List<Message> groupedQuestMessages;
-        private int currentMessageCheck = ConvenientQuestLogWindow.defaultMessageCheckValue;
-
-        private bool useDurationTokenSetting = false;
-        private bool useDetailedQuestDurationSetting = false;
+        bool useDurationTokenSetting = false;
+        bool useDetailedQuestDurationSetting = false;
 
         Dictionary<string, string> stringTable = null;
 
@@ -56,43 +56,52 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             base.Setup();
             useDurationTokenSetting = RegisterConvenientQuestLogWindow.mod.GetSettings().GetBool("General", "QuestsShouldContainDurationToken");
             useDetailedQuestDurationSetting = RegisterConvenientQuestLogWindow.mod.GetSettings().GetBool("General", "DetailedQuestDuration");
-            Mod TOMod = ModManager.Instance.GetMod("TravelOptions");
-            if (TOMod == null)
-                return;
-            ConvenientQuestLogWindow.travelOptionsModEnabled = TOMod.Enabled;
-            ModSettings settings = TOMod.GetSettings();
-            ConvenientQuestLogWindow.travelOptionsCautiousTravel = settings.GetBool("CautiousTravel", "PlayerControlledCautiousTravel");
-            ConvenientQuestLogWindow.travelOptionsStopAtInnsTravel = settings.GetBool("StopAtInnsTravel", "PlayerControlledInnsTravel");
+
+            Mod travelOptionsMod = ModManager.Instance.GetMod("TravelOptions");
+
+            if (travelOptionsMod != null)
+            {
+                travelOptionsModEnabled = travelOptionsMod.Enabled;
+                var travelOptionsSettings = travelOptionsMod.GetSettings();
+                travelOptionsCautiousTravel = travelOptionsSettings.GetBool("CautiousTravel", "PlayerControlledCautiousTravel");
+                travelOptionsStopAtInnsTravel = travelOptionsSettings.GetBool("StopAtInnsTravel", "PlayerControlledInnsTravel");
+            }
         }
 
         public override void Update()
         {
             base.Update();
-            if (DisplayMode != DaggerfallQuestJournalWindow.JournalDisplay.ActiveQuests || currentMessageCheck == currentMessageIndex)
+            if (DisplayMode != JournalDisplay.ActiveQuests || currentMessageCheck == currentMessageIndex)
                 return;
+
             currentMessageCheck = currentMessageIndex;
             questLogLabel.Clear();
-            if (ConvenientQuestLogWindow.selectedQuestDisplayed)
+
+            if (selectedQuestDisplayed)
+            {
                 SetTextForSelectedQuest(selectedQuestMessage);
+            }
             else
+            {
                 SetTextActiveQuests();
+            }
         }
 
         public override void OnPush()
         {
             base.OnPush();
-            currentMessageCheck = ConvenientQuestLogWindow.defaultMessageCheckValue;
+            currentMessageCheck = defaultMessageCheckValue;
         }
 
         public override void OnPop()
         {
             base.OnPop();
-            currentMessageCheck = ConvenientQuestLogWindow.defaultMessageCheckValue;
+            currentMessageCheck = defaultMessageCheckValue;
         }
 
         protected override void HandleClick(Vector2 position, bool remove = false)
         {
-            if (DisplayMode != DaggerfallQuestJournalWindow.JournalDisplay.ActiveQuests)
+            if (DisplayMode != JournalDisplay.ActiveQuests)
             {
                 base.HandleClick(position, remove);
             }
@@ -100,12 +109,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 if (entryLineMap == null)
                     return;
-                int index = (int)position.y / questLogLabel.LineHeight;
-                if (index < entryLineMap.Count)
-                    selectedEntry = entryLineMap[index];
+                int line = (int)position.y / questLogLabel.LineHeight;
+
+                if (line < entryLineMap.Count)
+                    selectedEntry = entryLineMap[line];
                 else
                     selectedEntry = entryLineMap[entryLineMap.Count - 1];
-                Debug.Log($"Line is: {index} entry: {selectedEntry}");
+
+                Debug.Log($"Line is: {line} entry: {selectedEntry}");
 
                 if (ConvenientQuestLogWindow.selectedQuestDisplayed)
                 {
@@ -114,9 +125,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 }
                 else
                 {
-                    if (index + 1 >= entryLineMap.Count)
+                    //ensure nothing happens when last empty line is clicked
+                    if (line + 1 >= entryLineMap.Count)
                         return;
-                    if (index == 0 || entryLineMap[index - 1] != selectedEntry)
+                    if (line == 0 || entryLineMap[line - 1] != selectedEntry)
                     {
                         currentMessageIndex = 0;
                         selectedQuestMessage = groupedQuestMessages[selectedEntry];
@@ -155,9 +167,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     }
                     else
                     {
-                        if (entryLineMap[index - 1] != selectedEntry || entryLineMap[index + 1] != selectedEntry)
-                            return;
-                        HandleQuestClicks(groupedQuestMessages[selectedEntry]);
+                        if (entryLineMap[line - 1] == selectedEntry && entryLineMap[line + 1] == selectedEntry)
+                            HandleQuestClicks(groupedQuestMessages[selectedEntry]);
                     }
                 }
             }
@@ -166,7 +177,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected override void DialogButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             base.DialogButton_OnMouseClick(sender, position);
-            currentMessageCheck = ConvenientQuestLogWindow.defaultMessageCheckValue;
+            currentMessageCheck = defaultMessageCheckValue;
         }
 
         private string GetTravelTime(Place place)
@@ -177,22 +188,35 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (dfLocation.LocationIndex == GameManager.Instance.PlayerGPS.CurrentLocation.LocationIndex)
                 return currentLocation;
 
-            DFPosition mapPixel = MapsFile.LongitudeLatitudeToMapPixel(dfLocation.MapTableData.Longitude, dfLocation.MapTableData.Latitude);
+            DFPosition position = MapsFile.LongitudeLatitudeToMapPixel(dfLocation.MapTableData.Longitude, dfLocation.MapTableData.Latitude);
 
-            if (ConvenientQuestLogWindow.travelOptionsModEnabled && ConvenientQuestLogWindow.travelOptionsCautiousTravel && ConvenientQuestLogWindow.travelOptionsStopAtInnsTravel)
+            if (travelOptionsModEnabled && travelOptionsCautiousTravel && travelOptionsStopAtInnsTravel)
             {
                 TransportManager transportManager = GameManager.Instance.TransportManager;
                 bool useHorse = transportManager.TransportMode == TransportModes.Horse;
                 bool useCart = transportManager.TransportMode == TransportModes.Cart;
-                int num = (int)(GameManager.Instance.GuildManager.FastTravel(travelTimeCalculator.CalculateTravelTime(mapPixel, !ConvenientQuestLogWindow.travelOptionsCautiousTravel, !ConvenientQuestLogWindow.travelOptionsStopAtInnsTravel, false, useHorse, useCart)) / ((ConvenientQuestLogWindow.travelOptionsCautiousTravel ? 0.800000011920929 : 1.0) * 2.0));
-                return string.Format(travelOptionsDuration, num / 60, num % 60);
+
+                int travelTimeTotalMins = travelTimeCalculator.CalculateTravelTime(position,
+                    speedCautious: !travelOptionsCautiousTravel,
+                    sleepModeInn: !travelOptionsStopAtInnsTravel,
+                    travelShip: false,
+                    hasHorse: useHorse,
+                    hasCart: useCart);
+                travelTimeTotalMins = GameManager.Instance.GuildManager.FastTravel(travelTimeTotalMins);
+
+                //TODO: can make this calc dynamic based on mod settings
+                float travelTimeMinsMult = (travelOptionsCautiousTravel ? 0.8f : 1.0f) * 2;
+                travelTimeTotalMins = (int)(travelTimeTotalMins / travelTimeMinsMult);
+
+                return string.Format(travelOptionsDuration, travelTimeTotalMins / 60, travelTimeTotalMins % 60);
             }
             bool hasHorse = GameManager.Instance.TransportManager.HasHorse();
             bool hasCart = GameManager.Instance.TransportManager.HasCart();
-            int minutesToTravel = GameManager.Instance.GuildManager.FastTravel(travelTimeCalculator.CalculateTravelTime(mapPixel, true, true, false, hasHorse, hasCart));
+            int minutesToTravel = GameManager.Instance.GuildManager.FastTravel(travelTimeCalculator.CalculateTravelTime(position, true, true, false, hasHorse, hasCart));
             int daysToTravel = minutesToTravel / 1440;
             if (minutesToTravel % 1440 > 0)
                 ++daysToTravel;
+
             return string.Format(travelDuration, daysToTravel);
         }
 
