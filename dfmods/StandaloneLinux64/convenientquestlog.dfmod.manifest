@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 755983567
+CRC: 2076342248
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 63486af73e9bc94217c6b0be81afab42
+    Hash: 4ae5bde59de21bb6d27e720ca1bf882f
   TypeTreeHash:
     serializedVersion: 2
     Hash: 5ad585dd02dfb5016c0dad519eab8f49
@@ -14,7 +14,7 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Untracked/ModBuilder/ConvenientQuestLog/ConvenientQuestLogWindow.cs.txt
-- Assets/Untracked/ModBuilder/ConvenientQuestLog/RegisterConvenientQuestLogWindow.cs.txt
 - Assets/Game/Mods/ConvenientQuestLog/modsettings.json
 - Assets/Game/Mods/ConvenientQuestLog/ConvenientQuestLog.dfmod.json
+- Assets/Untracked/ModBuilder/ConvenientQuestLog/RegisterConvenientQuestLogWindow.cs.txt
 Dependencies: []

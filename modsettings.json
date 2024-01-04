@@ -7,7 +7,7 @@
             "IsAdvanced": false,
             "Keys": [
                 {
-                    "Value": false,
+                    "Value": true,
                     "Name": "QuestsShouldContainDurationToken",
                     "Description": "If true - only search for time left in quests that contains duration token, false - try to search in all quests",
                     "$version": "v1",
