@@ -316,9 +316,19 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             ConvenientQuestLogWindow.selectedQuestDisplayed = true;
             if (questMessages == null)
                 return;
+
             messageCount = questMessages.Count;
             questLogLabel.TextScale = 1.0f;
             List<Message> list = questMessages.Where(x => x.ParentQuest.UID == message.ParentQuest.UID).ToList();
+
+            // We were asked to show deleted quests.
+            // Cancelled, completed or by mistake
+            if (list.Count == 0)
+            {
+                SetTextActiveQuests();
+                return;
+            }
+
             titleLabel.Text = FormatQuestTitle(list.First().ParentQuest.DisplayName);
             titleLabel.ToolTip = defaultToolTip;
             titleLabel.ToolTipText = activeQuestToolTipText;
