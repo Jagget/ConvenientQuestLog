@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using UnityEngine;
+
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallConnect.Utility;
@@ -5,12 +11,6 @@ using DaggerfallWorkshop.Game.Questing;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
-using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
-using Mono.CSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -226,7 +226,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (questMessages == null)
                 return;
             messageCount = questMessages.Count;
-            questLogLabel.TextScale = 1.1f;
+            questLogLabel.TextScale = 1.0f;
             titleLabel.Text = TextManager.Instance.GetLocalizedText("activeQuests", TextCollections.Internal, false);
             titleLabel.ToolTip = defaultToolTip;
             titleLabel.ToolTipText = journalToolTipText;
@@ -317,7 +317,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (questMessages == null)
                 return;
             messageCount = questMessages.Count;
-            questLogLabel.TextScale = 1.1f;
+            questLogLabel.TextScale = 1.0f;
             List<Message> list = questMessages.Where(x => x.ParentQuest.UID == message.ParentQuest.UID).ToList();
             titleLabel.Text = FormatQuestTitle(list.First().ParentQuest.DisplayName);
             titleLabel.ToolTip = defaultToolTip;
